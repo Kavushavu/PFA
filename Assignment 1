@@ -1,0 +1,144 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyPKg5eqZD80tdBfEVBe50hs",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/Kavushavu/PFA/blob/main/Assignment%201\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 1,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "3C_CM-7aSKkT",
+        "outputId": "fe0666bc-f108-4485-c820-7d363e6c4e32"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Shape of Dataset: (667, 20)\n",
+            "Dimensions of Dataset: 667 rows, 20 columns\n",
+            "\n",
+            "Type of All Attributes:\n",
+            "State                      object\n",
+            "Account length              int64\n",
+            "Area code                   int64\n",
+            "International plan         object\n",
+            "Voice mail plan            object\n",
+            "Number vmail messages       int64\n",
+            "Total day minutes         float64\n",
+            "Total day calls             int64\n",
+            "Total day charge          float64\n",
+            "Total eve minutes         float64\n",
+            "Total eve calls             int64\n",
+            "Total eve charge          float64\n",
+            "Total night minutes       float64\n",
+            "Total night calls           int64\n",
+            "Total night charge        float64\n",
+            "Total intl minutes        float64\n",
+            "Total intl calls            int64\n",
+            "Total intl charge         float64\n",
+            "Customer service calls      int64\n",
+            "Churn                        bool\n",
+            "dtype: object\n"
+          ]
+        }
+      ],
+      "source": [
+        "import logging\n",
+        "import pandas as pd\n",
+        "import sys\n",
+        "\n",
+        "#Create an append only log that captures DEBUG, INFO, WARN, ERROR, CRITICAL type of information in the application\n",
+        "# logger = logHandler.basicConfig(filename='file_operations.log', filemode='a',\n",
+        "#                     format='%(asctime)s - %(levelname)s - %(message)s', level=logHandler.DEBUG)\n",
+        "\n",
+        "# Create logger\n",
+        "logger = logging.getLogger('filehandler_logger')\n",
+        "logger.setLevel(logging.DEBUG)\n",
+        "\n",
+        "# Create handlers\n",
+        "file_handler = logging.FileHandler('file_operations.log')\n",
+        "console_handler = logging.StreamHandler()\n",
+        "\n",
+        "# Create formatters and add to handlers\n",
+        "formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')\n",
+        "file_handler.setFormatter(formatter)\n",
+        "console_handler.setFormatter(formatter)\n",
+        "\n",
+        "# Add handlers to logger\n",
+        "logger.addHandler(file_handler)\n",
+        "logger.addHandler(console_handler)\n",
+        "\n",
+        "#Url/path to training data file\n",
+        "train_data = 'https://raw.githubusercontent.com/Bits-Deep-Analytics/PFA/main/churn-bigml-20.csv'\n",
+        "\n",
+        "#initialize empty dataframe\n",
+        "df = pd.DataFrame()\n",
+        "\n",
+        "#Error handling and reading from all 3 formats\n",
+        "try:\n",
+        "    if train_data.endswith('.txt'):\n",
+        "        df = pd.read_csv(train_data, header=0, sep='')\n",
+        "\n",
+        "    elif train_data.endswith('.csv'):\n",
+        "        df = pd.read_csv(train_data, header=0)\n",
+        "\n",
+        "    elif train_data.endswith('.tsv'):\n",
+        "        df = pd.read_csv(train_data, header=0, sep='\\t')\n",
+        "\n",
+        "    else:\n",
+        "        raise ValueError(f'Invalid file type.')\n",
+        "\n",
+        "except pd.errors.ParserError as e:\n",
+        "    print(e)\n",
+        "    logger.error(f'Error while parsing to dataframe: {e}')\n",
+        "    sys.exit(1)\n",
+        "\n",
+        "except FileNotFoundError as e:\n",
+        "    print(e)\n",
+        "    logger.error(f'File not found at: {train_data}')\n",
+        "    sys.exit(1)\n",
+        "\n",
+        "except ValueError as e:\n",
+        "    logger.error(e)\n",
+        "    sys.exit(1)\n",
+        "\n",
+        "# Replace empty values with NaN\n",
+        "df.replace('', pd.NA, inplace=True)\n",
+        "\n",
+        "print(f\"Shape of Dataset: {df.shape}\")\n",
+        "\n",
+        "print(f\"Dimensions of Dataset: {df.shape[0]} rows, {df.shape[1]} columns\")\n",
+        "\n",
+        "print(f\"\\nType of All Attributes:\")\n",
+        "print(df.dtypes)"
+      ]
+    }
+  ]
+}
